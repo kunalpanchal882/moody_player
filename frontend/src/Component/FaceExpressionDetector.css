@@ -1,0 +1,30 @@
+.mainContainer{
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    justify-content: flex-start;
+    padding: 2rem 3rem;
+}
+
+.user-video-feed{
+    width: 30rem;
+    aspect-ratio: 16/9;
+    border-radius: 2rem;
+    object-fit: cover;
+}
+
+.mainContainer button{
+    background-color: rgba(9, 28, 236, 0.708);
+    border: none;
+    padding: 0.5rem 0.9rem;
+    border-radius: 0.5rem;
+    color: rgba(255, 255, 255, 0.727);
+    cursor: pointer;
+    box-shadow: blue 1px 2px 8px 1px;
+}
+
+.mainContainer button:hover{
+    background-color: rgb(22, 147, 249);
+}
+

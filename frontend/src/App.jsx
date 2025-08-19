@@ -1,11 +1,11 @@
 import FaceExpressionDetector from './Component/FaceExpressionDetector '
-import './App.css'
-
+import MoodSong from "./Component/MoodSong";
 function App() {
 
   return (
     <>
    <FaceExpressionDetector/>
+    <MoodSong/>
     </>
   )
 }

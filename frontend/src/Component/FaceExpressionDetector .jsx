@@ -1,76 +1,70 @@
+// FaceExpressionDetector.jsx
 import React, { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
+import "../Component/FaceExpressionDetector.css";
 
-const FaceExpressionDetector = () => {
+
+export default function FaceExpressionDetector() {
   const videoRef = useRef(null);
-  const canvasRef = useRef(null);
-  const [mood, setMood] = useState("Loading...");
+  const [expression, setExpression] = useState("Loading models…");
+  // const intervalRef = useRef(null);
 
-  // Load models and start video
   useEffect(() => {
     const loadModels = async () => {
+      const MODEL_URL = "/models"; // models in public/models
       await Promise.all([
-        faceapi.nets.ssdMobilenetv1.loadFromUri("/models"),
-        faceapi.nets.faceLandmark68Net.loadFromUri("/models"),
-        faceapi.nets.faceExpressionNet.loadFromUri("/models"),
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceExpressionNet.loadFromUri(MODEL_URL),
       ]);
       startVideo();
     };
     loadModels();
   }, []);
 
-  // Start webcam
-  const startVideo = () => {
-    navigator.mediaDevices
-      .getUserMedia({ video: {} })
-      .then((stream) => {
-        videoRef.current.srcObject = stream;
-      })
-      .catch((err) => console.error("Error starting webcam:", err));
+  const startVideo = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      videoRef.current.srcObject = stream;
+    } catch (err) {
+      console.error("Camera error:", err);
+      setExpression("Camera not accessible");
+    }
   };
 
-  // Detect expressions continuously
-  const detectExpressions = async () => {
+  const detetFaceExpresion = async () => {
+    const video = videoRef.current;
     const detections = await faceapi
-      .detectAllFaces(videoRef.current, new faceapi.SsdMobilenetv1Options())
-      .withFaceLandmarks()
+      .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
       .withFaceExpressions();
 
-   
+    if (detections.length > 0) {
+      const exp = detections[0].expressions;
+      const [best] = Object.entries(exp).sort((a, b) => b[1] - a[1]);
+      setExpression(best[0]); // top expression
+    } else {
+      setExpression("No face detected");
+    }
 
-    const dims = { width: 720, height: 560 };
-    faceapi.matchDimensions(canvasRef.current, dims);
-    const resized = faceapi.resizeResults(detections, dims);
-    canvasRef.current.getContext("2d").clearRect(0, 0, 720, 560);
-
+    console.log(expression);
   };
 
-  // Run detection every 500ms
-  useEffect(() => {
-    // let interval;
-    // videoRef.current?.addEventListener("play", () => {
-    //   interval = setInterval(detectExpressions, 500);
-    // });
-    // return () => clearInterval(interval);
-  }, []);
+  // const handlePlay = () => {
+
+  //   intervalRef.current = setInterval(async () => {
+
+  //   }, 1000);
+  // };
 
   return (
-    <div style={{ textAlign: "center" }}>
-      <div style={{ position: "relative", display: "inline-block" }}>
-        <video ref={videoRef} autoPlay muted width="720" height="560" />
-        <canvas
-          ref={canvasRef}
-          width="720"
-          height="560"
-          style={{ position: "absolute", left: 0, top: 0 }}
-        />
-      </div>
-      <h3 style={{ marginTop: "10px" }}>
-        Current Mood: <span style={{ color: "#007bff" }}>{mood}</span>
-      </h3>
-      <button onClick={detectExpressions}>detect mood</button>
+    <div className="mainContainer">
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        style={{ borderRadius: "8px" }}
+        className="user-video-feed"
+      />
+      <button onClick={detetFaceExpresion}>detect face </button>
     </div>
   );
-};
-
-export default FaceExpressionDetector;
+}
