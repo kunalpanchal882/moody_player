@@ -2,9 +2,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import * as faceapi from "face-api.js";
 import "../Component/FaceExpressionDetector.css";
+import axios from 'axios'
 
 
-export default function FaceExpressionDetector() {
+export default function FaceExpressionDetector({setsongs}) {
   const videoRef = useRef(null);
   const [expression, setExpression] = useState("Loading models…");
   // const intervalRef = useRef(null);
@@ -45,7 +46,12 @@ export default function FaceExpressionDetector() {
       setExpression("No face detected");
     }
 
-    console.log(expression);
+    // get / songs / http://localhost:300/songs?mood=happy
+    axios.get(`http://localhost:3000/songs?mood=${expression}`)
+    .then(response => {
+      console.log(response.data.songs);
+      setsongs(response.data.songs)
+    })
   };
 
   // const handlePlay = () => {

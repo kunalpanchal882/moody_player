@@ -1,28 +1,20 @@
-import React, { useState } from 'react'
 import { IoIosPlayCircle } from "react-icons/io";
 import { IoPauseCircleSharp } from "react-icons/io5";
 import "../Component/MoodSong.css";
+import { useState } from "react";
 
-const MoodSong = () => {
 
+const MoodSong = ({songs}) => {
 
-    const [songs, setsongs] = useState([
-        {
-            title:"test_title",
-            artist:"test_artist",
-            url:"test_url"
-        },
-        {
-            title:"test_title",
-            artist:"test_artist",
-            url:"test_url"
-        },
-        {
-            title:"test_title",
-            artist:"test_artist",
-            url:"test_url"
-        },
-    ])
+    const [isPlaying, setisPlaying] = useState(null)
+
+    const handelPlayPause = (index) => {
+        if(isPlaying===index){
+            setisPlaying(null)
+        }else{
+            setisPlaying(index)
+        }
+    }
 
   return (
     <div className='mood_songs'>
@@ -34,8 +26,18 @@ const MoodSong = () => {
                     <p>{song.artist}</p>
                 </div>
                 <div className='play_pause_btn'>
-                    <IoPauseCircleSharp />
-                    <IoIosPlayCircle />
+                    {
+                        isPlaying === index &&
+                        <audio src={song.audio} 
+                    style={{
+                        display:"none"
+                    }} 
+                    controls
+                    autoPlay={isPlaying === index}
+                    ></audio> }
+                    <button onClick={() => handelPlayPause(index)}>
+                        {isPlaying ===index ? <IoPauseCircleSharp /> : <IoIosPlayCircle />}
+                    </button>
                 </div>
             </div>  
         ))}
